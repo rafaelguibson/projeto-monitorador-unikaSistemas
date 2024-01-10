@@ -1,11 +1,10 @@
-package controller;
+package monitoradorbackend.controller;
 
-import dto.MonitoradorDTO;
+import monitoradorbackend.entities.Monitorador;
+import monitoradorbackend.services.MonitoradorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import services.MonitoradorService;
 
 import java.util.List;
 
@@ -13,44 +12,35 @@ import java.util.List;
 @RequestMapping("/api/monitoradores")
 public class MonitoradorController {
 
+    private final MonitoradorService monitoradorService;
+
     @Autowired
-    private MonitoradorService monitoradorService;
+    public MonitoradorController(MonitoradorService monitoradorService) {
+        this.monitoradorService = monitoradorService;
+    }
 
     @PostMapping
-    public ResponseEntity<MonitoradorDTO> cadastrarMonitorador(@RequestBody MonitoradorDTO monitoradorDTO) {
-        MonitoradorDTO novoMonitorador = monitoradorService.cadastrarMonitorador(monitoradorDTO);
-        return new ResponseEntity<>(novoMonitorador, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<MonitoradorDTO> alterarMonitorador(@PathVariable Long id, @RequestBody MonitoradorDTO monitoradorDTO) {
-        MonitoradorDTO monitoradorAlterado = monitoradorService.alterarMonitorador(id, monitoradorDTO);
-        if (monitoradorAlterado != null) {
-            return new ResponseEntity<>(monitoradorAlterado, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluirMonitorador(@PathVariable Long id) {
-        monitoradorService.excluirMonitorador(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<Monitorador> createMonitorador(@RequestBody Monitorador monitorador) {
+        Monitorador createdMonitorador = monitoradorService.saveMonitorador(monitorador);
+        return ResponseEntity.ok(createdMonitorador);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MonitoradorDTO> listarPorId(@PathVariable Long id) {
-        MonitoradorDTO monitoradorDTO = monitoradorService.listarPorId(id);
-        if (monitoradorDTO != null) {
-            return new ResponseEntity<>(monitoradorDTO, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<Monitorador> getMonitoradorById(@PathVariable Long id) {
+        return monitoradorService.getMonitoradorById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<MonitoradorDTO>> listarTodos() {
-        List<MonitoradorDTO> monitoradoresDTO = monitoradorService.listarTodos();
-        return new ResponseEntity<>(monitoradoresDTO, HttpStatus.OK);
+    public ResponseEntity<List<Monitorador>> getAllMonitoradores() {
+        List<Monitorador> monitoradores = monitoradorService.getAllMonitoradores();
+        return ResponseEntity.ok(monitoradores);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMonitorador(@PathVariable Long id) {
+        monitoradorService.deleteMonitorador(id);
+        return ResponseEntity.noContent().build();
     }
 }

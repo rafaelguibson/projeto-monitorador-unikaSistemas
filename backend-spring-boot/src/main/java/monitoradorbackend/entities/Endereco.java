@@ -1,44 +1,52 @@
-package entities;
+package monitoradorbackend.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name = "ESTAGIO_ENDERECO")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Endereco {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_endereco")
     private Long id;
 
-    @Column(length = 255)
-    private String logradouro;
-
-    @Column(length = 10)
-    private String numero;
-
-    @Column(length = 10)
+    @Column(name = "cep", nullable = false)
     private String cep;
 
-    @Column(length = 100)
+    @Column(name = "logradouro", nullable = false)
+    private String logradouro;
+
+    @Column(name = "numero")
+    private String numero;
+
+    @Column(name = "bairro", nullable = false)
     private String bairro;
 
-    @Column(length = 100)
+    @Column(name = "cidade", nullable = false)
     private String cidade;
 
-    @Column(length = 50)
+    @Column(name = "estado", nullable = false)
     private String estado;
 
-    @Column(length = 2)
+    @Column(name = "uf", nullable = false)
     private String uf;
 
-    @Column(length = 20)
-    private String tipo;
+    @Column(name = "principal", nullable = false)
+    private boolean principal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "monitorador_id")
+    // Relacionamento N:1 com Monitorador
+    @ManyToOne
+    @JoinColumn(name = "id_monitorador")
     private Monitorador monitorador;
 
+    // Getters e Setters
 }
